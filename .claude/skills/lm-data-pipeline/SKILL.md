@@ -7,7 +7,7 @@ description: |
   "적재 프로젝트 만들어줘" · "○○ 품목 데이터 적재" · "Snowflake/Databricks/BigQuery 에 올려줘" · "스키마 DDL 뽑아줘" ·
   "적재 계획 보여줘" · "적재 검증" · "트렌드 새 품목 룰북" 요청에 쓴다.
 metadata:
-  build: v1.0.1
+  build: v1.0.2
 ---
 
 # lm-data-pipeline — 검색 데이터 적재 파이프라인

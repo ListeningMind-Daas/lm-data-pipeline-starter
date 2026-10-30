@@ -98,7 +98,7 @@ ListeningMind DaaS 검색 데이터 **적재 파이프라인 워크스페이스*
 
 ```
 lm-data-pipeline-starter/
-├── CLAUDE.md · README-STARTER.md
+├── README.md · README-STARTER.md · CLAUDE.md
 ├── .claude/skills/lm-data-pipeline/
 │   ├── SKILL.md · references/collect-guide.md
 │   ├── loader/          lmdp.py · design/schema_design.json(.md) · sinks/(local·databricks·snowflake·bigquery)

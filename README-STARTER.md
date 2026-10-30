@@ -1,4 +1,4 @@
-# lm-data-pipeline 스타터 v1.0.1
+# lm-data-pipeline 스타터 v1.0.2
 
 ListeningMind DaaS 검색 데이터 **적재 파이프라인 워크스페이스**입니다.
 품목·시장별 검색 데이터를 수집·정제·분석하고, 프로젝트마다 지정한 저장소에 **스키마 설계안 순서대로** 싣습니다.
@@ -43,4 +43,4 @@ python3 .claude/skills/lm-data-pipeline/loader/lmdp.py selftest
 - 공유(Delta Sharing 등) 설정 — 대상 저장소의 공유 기능을 쓰세요
 
 ---
-v1.0.1 · Ascent AI · 문의: ListeningMind DaaS 담당자
+v1.0.2 · Ascent AI · 문의: ListeningMind DaaS 담당자
