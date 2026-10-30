@@ -1,0 +1,11 @@
+gl,category_key,layer,layer_name,description,expansion_method,target_share_pct,priority,version,note
+kr,*,L1,카테고리 코어,제품 카테고리 일반명·대표 검색어(예 로봇청소기),seed-keywords 코어 시드,15,10,v1,카테고리 진입 핵심 키워드
+kr,*,L2,브랜드·제품라인,브랜드+시리즈+모델명(시리즈·라인명 등),brand_rules 연계 확장,25,9,v1,브랜드 SOV 산출 기반
+kr,*,L3,속성·기능,스펙·용량·성능·기능 속성(물걸레·헤파·인버터),keyword_info 속성 확장,25,8,v1,제품 속성 수요
+kr,*,L4,사용맥락·니즈,사용상황·구매의도·타겟(원룸용·펫·신혼),intent_finder 의도 확장,20,7,v1,페르소나·저니 연계
+kr,*,L5,롱테일·비교·대안,비교·후기·가격·대안(vs·추천·순위),cluster_finder 군집 확장,15,6,v1,롱테일 커버리지
+us,*,L1,카테고리 코어,카테고리 일반명·대표 검색어(smart tv·65 inch tv),seed-keywords 코어 시드,15,10,v1,카테고리 진입 핵심 키워드
+us,*,L2,브랜드·제품라인,브랜드+시리즈+모델(brand series · line names),brand_rules 연계 확장,25,9,v1,브랜드 SOV 산출 기반
+us,*,L3,속성·기능,스펙·해상도·기능(120hz·dolby vision),keyword_info 속성 확장,25,8,v1,제품 속성 수요
+us,*,L4,사용맥락·니즈,사용상황·구매의도(gaming·tv stand),intent_finder 의도 확장,20,7,v1,페르소나·저니 연계
+us,*,L5,롱테일·비교·대안,비교·트러블슈팅·후기(vs·won't turn on),cluster_finder 군집 확장,15,6,v1,롱테일 커버리지

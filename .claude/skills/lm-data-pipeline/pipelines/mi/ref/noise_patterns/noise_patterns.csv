@@ -1,0 +1,17 @@
+gl,category_key,pattern,match_type,scope,reason,action,version,note
+kr,*,성인|야동|음란|19금|성인용품,regex,keyword,성인/음란,drop,v1,완전 무관 격리
+kr,*,주가|주식|시세|배당|종목|증권,regex,keyword,금융/주식,drop,v1,기업 주가 등 금융 검색
+kr,*,채용|구인|연봉|자소서|면접|인턴|공채,regex,keyword,채용/구인,drop,v1,취업 관련
+kr,*,토렌트|torrent|무료다운|무료보기|불법,regex,keyword,불법다운,drop,v1,불법 콘텐츠
+kr,*,뜻|의미|영어로|스펠링|번역,regex,keyword,사전/번역,drop,v1,사전·번역 질의
+kr,*,a/s|에이에스|수리|서비스센터|고장|출장기사|기사님,regex,keyword,AS/수리,flag,v1,사후서비스-저구매의도(행 유지)
+kr,*,중고|중고나라|당근|중고거래|번개장터,regex,keyword,중고거래,flag,v1,중고 시장-신제품 집계 제외
+kr,*,대리점|판매점|매장|전시장|하이마트|전자랜드,regex,keyword,유통/매장,flag,v1,오프라인 매장 탐색
+kr,*,설명서|사용법|매뉴얼|메뉴얼|초기화|연결방법|설치방법,regex,keyword,매뉴얼/사용법,flag,v1,사용정보-구매전환 낮음
+kr,*,에러|error|에러코드|점검|리셋,regex,keyword,에러코드,flag,v1,고장·에러 진단
+kr,*,리퍼|리퍼비시|refurbish|전시상품,regex,keyword,리퍼/전시,flag,v1,리퍼·전시품
+kr,*,렌탈해지|렌탈해약|위약금|약정,regex,keyword,렌탈해지,flag,v1,해지·위약금(렌탈 구매의도와 구분)
+us,*,stock price|share price|ticker|dividend,regex,keyword,금융/주식,drop,v1,금융 검색 격리
+us,*,\bcareers?\b|\bhiring\b|\bsalary\b,regex,keyword,채용/구인,drop,v1,채용 관련 격리
+us,*,gmail|g ?mail|hotmail|googlemail|\bemail\b|\blogin\b|log ?ins?\b,regex,keyword,이메일/로그인,flag,v2,포털·로그인 검색 혼입
+us,*,\bstocks?\b|\bnasdaq\b|s&p ?500|dow jones,regex,keyword,금융/주식,drop,v2,주식 검색 격리(확장)

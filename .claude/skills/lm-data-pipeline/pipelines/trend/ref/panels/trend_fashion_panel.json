@@ -1,0 +1,84 @@
+{
+  "category_key": "trend_fashion",
+  "gl": "kr",
+  "purpose": "트렌드 모니터링용 고정 패널 + 속도 게이팅 룰. 런 간 차분(cross-run diff)의 기준 유니버스.",
+  "refresh_cadence": "monthly",
+
+  "discovery": {
+    "api": "intent_finder",
+    "scope": "TREND_WATCH",
+    "mode": "per_seed",
+    "volume_threshold": 30,
+    "sort": "volume_total",
+    "order": "desc",
+    "limit_per_seed": 60,
+    "note": "TREND_WATCH 시드만 per-seed로 탐색(시드별 독립 quota) → 에버그린 메가카테고리가 limit 잠식하는 문제 방지. CATEGORY_BASELINE은 안정 추적만, 공격적 탐색 제외. 속도 게이팅(vol50+trend0.3)은 keyword_info 후 로컬 적용.",
+    "learned": "단일 호출+공유 limit은 최대볼륨 시드(니트)가 88% 잠식 → per-seed로 전환(2026-06-29 run #1 교훈)."
+  },
+
+  "inclusion_floor": {
+    "comment": "패널 포함 규칙 — 작아도 급등하면 포함(velocity gating).",
+    "stable":   { "min_vol_avg": 300 },
+    "emerging": { "min_vol_avg": 50, "min_abs_trend": 0.3 }
+  },
+
+  "breakout_flag": { "min_trend": 0.5, "min_vol_avg": 100 },
+
+  "diff_thresholds": {
+    "accelerating_min_delta_trend": 0.2,
+    "fading_max_trend": -0.05,
+    "rising_min_trend": 0.05
+  },
+
+  "segment_entry_points": {
+    "required_segments": ["CATEGORY", "STYLE_TREND"],
+    "note": "각 세그먼트에 최소 1개 진입점 보유해야 블라인드 스팟 0 → monitoring_ready."
+  },
+
+  "tracks": {
+    "TREND_WATCH": "스타일 트렌드 — Discovery 집중, 신규 진입 조기 포착",
+    "CATEGORY_BASELINE": "에버그린 카테고리 — 안정 추적만, 공격적 Discovery 제외"
+  },
+  "core_panel": [
+    { "canonical": "여성원피스", "segment": "CATEGORY",    "track": "CATEGORY_BASELINE" },
+    { "canonical": "트렌치코트", "segment": "CATEGORY",    "track": "CATEGORY_BASELINE" },
+    { "canonical": "와이드팬츠", "segment": "CATEGORY",    "track": "CATEGORY_BASELINE" },
+    { "canonical": "카고팬츠",   "segment": "CATEGORY",    "track": "CATEGORY_BASELINE" },
+    { "canonical": "니트",       "segment": "CATEGORY",    "track": "CATEGORY_BASELINE" },
+    { "canonical": "올드머니룩", "segment": "STYLE_TREND", "track": "TREND_WATCH" },
+    { "canonical": "발레코어",   "segment": "STYLE_TREND", "track": "TREND_WATCH" },
+    { "canonical": "고프코어",   "segment": "STYLE_TREND", "track": "TREND_WATCH" },
+    { "canonical": "y2k패션",    "segment": "STYLE_TREND", "track": "TREND_WATCH" }
+  ],
+
+  "watch_candidates": {
+    "discovered": "2026-06-29",
+    "note": "Discovery v2 게이팅 통과 상승 신규. 다음 사이클 차분으로 지속성 확인 후 core_panel 승격 검토.",
+    "items": [
+      { "keyword": "발레코어 운동화", "seed": "발레코어", "vol_avg": 4096, "trend": 0.76, "signal": "풋웨어 확산" },
+      { "keyword": "아디다스 발레코어", "seed": "발레코어", "vol_avg": 3423, "trend": 3.43, "signal": "브랜드 콜라보" },
+      { "keyword": "발레코어 슈즈", "seed": "발레코어", "vol_avg": 1643, "trend": 1.25, "signal": "풋웨어 확산" },
+      { "keyword": "발레코어 신발", "seed": "발레코어", "vol_avg": 1133, "trend": 0.52, "signal": "풋웨어 확산" },
+      { "keyword": "뉴발란스 발레코어", "seed": "발레코어", "vol_avg": 446, "trend": 2.78, "signal": "브랜드 콜라보" },
+      { "keyword": "휠라 발레코어", "seed": "발레코어", "vol_avg": 436, "trend": 2.29, "signal": "브랜드 콜라보" },
+      { "keyword": "y2k 패션 남자", "seed": "y2k패션", "vol_avg": 930, "trend": 2.36, "signal": "남성 침투" },
+      { "keyword": "y2k 패션 여자", "seed": "y2k패션", "vol_avg": 443, "trend": 1.26, "signal": "성별 세분" },
+      { "keyword": "고프코어 선글라스", "seed": "고프코어", "vol_avg": 616, "trend": 0.77, "signal": "악세서리 확산" },
+      { "keyword": "여름 고프코어", "seed": "고프코어", "vol_avg": 420, "trend": 8.31, "signal": "시즌성(여름)" },
+      { "keyword": "여름 올드머니룩", "seed": "올드머니룩", "vol_avg": 332, "trend": 10.69, "signal": "시즌성(여름)" }
+    ]
+  },
+
+  "new_trends_pending": {
+    "discovered": "2026-06-29",
+    "source": "cluster_finder(앵커=발레코어)",
+    "note": "신규 미감 발굴. 다음 사이클 seed로 편입 → core_panel(TREND_WATCH) 정식 추적. 블록코어는 원래 [데이터공백] 복구분.",
+    "items": [
+      { "canonical": "블록코어",   "segment": "STYLE_TREND", "vol_avg": 5006, "trend": 1.56, "verdict": "NEW_TREND", "recovers_gap": true },
+      { "canonical": "코케트",     "segment": "STYLE_TREND", "vol_avg": 586,  "trend": 0.30, "verdict": "NEW_TREND" },
+      { "canonical": "걸코어",     "segment": "STYLE_TREND", "vol_avg": 200,  "trend": 0.35, "verdict": "EMERGING" },
+      { "canonical": "리본코어",   "segment": "STYLE_TREND", "vol_avg": 168,  "trend": 0.35, "verdict": "EMERGING" },
+      { "canonical": "코티지코어", "segment": "STYLE_TREND", "vol_avg": 2856, "trend": 0.10, "verdict": "ESTABLISHED_ADJACENT" }
+    ]
+  }
+}

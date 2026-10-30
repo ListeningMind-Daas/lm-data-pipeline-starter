@@ -1,0 +1,41 @@
+{
+  "category_key": "trend_fashion",
+  "gl": "kr",
+  "description": "한국 패션 트렌드 키워드 정제 규칙. 표기 변형을 대표 키워드로 통합하고 세그먼트를 분류한다.",
+  "segments": ["STYLE_TREND", "CATEGORY", "DIMENSION"],
+  "default_segment": "UNCLASSIFIED",
+  "canonical_map": [
+    { "canonical": "여성원피스", "segment": "CATEGORY",    "variants": ["여성 원피스"] },
+    { "canonical": "올드머니룩", "segment": "STYLE_TREND", "variants": ["올드머니룩"] },
+    { "canonical": "발레코어",   "segment": "STYLE_TREND", "variants": ["발레코어", "발레리나 코어"] },
+    { "canonical": "트렌치코트", "segment": "CATEGORY",    "variants": ["트렌치 코트", "트랜치 코트", "트렌츠 코트"] },
+    { "canonical": "와이드팬츠", "segment": "CATEGORY",    "variants": ["와이드 팬츠"] },
+    { "canonical": "카고팬츠",   "segment": "CATEGORY",    "variants": ["카고 팬츠", "카고 펜츠"] },
+    { "canonical": "고프코어",   "segment": "STYLE_TREND", "variants": ["고프코어"] },
+    { "canonical": "니트",       "segment": "CATEGORY",    "variants": ["니트"] },
+    { "canonical": "y2k패션",    "segment": "STYLE_TREND", "variants": ["y2k 패션"] },
+
+    { "canonical": "청바지",   "segment": "CATEGORY", "variants": ["청바지", "청색 바지"] },
+    { "canonical": "패딩",     "segment": "CATEGORY", "variants": ["패딩"] },
+    { "canonical": "운동화",   "segment": "CATEGORY", "variants": ["운동화"] },
+    { "canonical": "크로스백", "segment": "CATEGORY", "variants": ["크로스백"] },
+    { "canonical": "바람막이", "segment": "CATEGORY", "variants": ["바람막이"] },
+    { "canonical": "레깅스",   "segment": "CATEGORY", "variants": ["레깅스"] },
+    { "canonical": "블라우스", "segment": "CATEGORY", "variants": ["블라우스"] },
+    { "canonical": "후드티",   "segment": "CATEGORY", "variants": ["후드티"] },
+    { "canonical": "스니커즈", "segment": "CATEGORY", "variants": ["스니커즈"] },
+    { "canonical": "후드집업", "segment": "CATEGORY", "variants": ["후드집업", "후드 집엎", "후드 짚업"] },
+    { "canonical": "블레이저", "segment": "CATEGORY", "variants": ["블레이저", "블레이자"] },
+    { "canonical": "청치마",   "segment": "CATEGORY", "variants": ["청치마"] },
+    { "canonical": "데님자켓", "segment": "CATEGORY", "variants": ["데님 자켓", "데님자켓"] },
+
+    { "canonical": "블록코어", "segment": "STYLE_TREND", "variants": ["블록코어", "블로크코어"] },
+    { "canonical": "코케트",   "segment": "STYLE_TREND", "variants": ["코케트", "코케트룩", "코케티시"] },
+    { "canonical": "걸코어",   "segment": "STYLE_TREND", "variants": ["걸코어"] },
+    { "canonical": "리본코어", "segment": "STYLE_TREND", "variants": ["리본코어"] },
+
+    { "canonical": "하객룩",   "segment": "DIMENSION", "dimension": "OCCASION_TPO",   "variants": ["하객룩"] },
+    { "canonical": "꾸안꾸",   "segment": "DIMENSION", "dimension": "STYLE_MODIFIER", "variants": ["꾸안꾸"] }
+  ],
+  "_expansion_note": "2026-06-29 확장: TIER1 카테고리 13 + 신규트렌드 4 + 차원 2 편입. 카테고리 커버리지 12%→77%."
+}

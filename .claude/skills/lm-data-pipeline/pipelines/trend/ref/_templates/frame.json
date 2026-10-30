@@ -1,0 +1,58 @@
+{
+ "frame_id": "{category}_kr_frame",
+ "version": "1.0.0",
+ "gl": "kr",
+ "authored_date": "<YYYY-MM-DD>",
+ "design_principle": "Frame-first: 시장 프레임(분모)을 먼저 확정하고 커버리지%로 유니버스를 판정한다. L0 노드는 품목 헤드 키워드이며, 수식 조합은 L1 intent_finder 확장에서 자연 발생분을 수집한다.",
+ "axes": {
+  "CATEGORY": "품목(아이템) 축 — 시장 분모의 뼈대",
+  "STYLE_TREND": "스타일·유형 축",
+  "TPO": "상황·목적 축",
+  "HUB": "unknown-unknowns 탐지용 시장 허브"
+ },
+ "nodes": [
+  {
+   "axis": "CATEGORY",
+   "group": "<그룹 이름>",
+   "keywords": [
+    "<품목 대표어 1>",
+    "<품목 대표어 2>"
+   ]
+  },
+  {
+   "axis": "STYLE_TREND",
+   "group": "<그룹 이름>",
+   "keywords": [
+    "<유형·스타일 키워드>"
+   ]
+  },
+  {
+   "axis": "TPO",
+   "group": "상황목적",
+   "keywords": [
+    "<상황·용도 키워드>"
+   ]
+  },
+  {
+   "axis": "HUB",
+   "group": "시장허브",
+   "keywords": [
+    "<시장 전체를 부르는 말>"
+   ]
+  }
+ ],
+ "l1_expansion_policy": {
+  "method": "per-node intent_finder",
+  "limit_per_node": 150,
+  "volume_threshold": 100,
+  "hub_limit": 500,
+  "hub_threshold": 300
+ },
+ "gating_policy": {
+  "STABLE": "vol_avg >= 300",
+  "EMERGING": "vol_avg >= 50 AND |volume_trend| >= 0.3",
+  "BELOW_FLOOR": "그 외 — 패널 제외, 후보 보존",
+  "breakout": "volume_trend >= 0.5 AND vol_avg >= 100"
+ },
+ "note": "<꺾쇠 자리를 모두 채운 뒤 실행한다 — 노드 수 × intent_finder 1회가 L1 비용이다>"
+}

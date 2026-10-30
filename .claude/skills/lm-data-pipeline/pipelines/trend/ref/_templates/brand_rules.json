@@ -1,0 +1,36 @@
+{
+ "category_key": "{category}",
+ "gl": "kr",
+ "description": "<브랜드 축 설명>",
+ "sov_rule": {
+  "frame": "플랫폼 제외 브랜드 검색량",
+  "cover": "누적 SOV≤80% + 급상승 브랜드는 SOV 무관 포함"
+ },
+ "monitoring": {
+  "cadence": "monthly",
+  "rising_min_trend": 0.2,
+  "new_entrant_min_vol_avg": 5000,
+  "diff": {
+   "accelerating_min_delta_trend": 0.2,
+   "fading_max_trend": -0.05,
+   "rising_min_trend": 0.05
+  },
+  "signals": []
+ },
+ "segments": [
+  "<세그먼트 예 PREMIUM>",
+  "PLATFORM"
+ ],
+ "brands": [
+  {
+   "canonical": "<브랜드 대표 표기>",
+   "segment": "<세그먼트>",
+   "aliases": [
+    "<다른 표기>"
+   ]
+  }
+ ],
+ "data_gap": [],
+ "excluded": [],
+ "_note": "동음이의(한 글자·일반어) 브랜드는 excluded 에 둔다"
+}

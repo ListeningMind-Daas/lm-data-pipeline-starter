@@ -1,0 +1,20 @@
+{
+ "category_key": "{category}",
+ "gl": "kr",
+ "description": "<품목 키워드 정제 규칙 설명>",
+ "segments": [
+  "CATEGORY",
+  "STYLE_TREND",
+  "DIMENSION"
+ ],
+ "default_segment": "UNCLASSIFIED",
+ "canonical_map": [
+  {
+   "canonical": "<대표 키워드>",
+   "segment": "CATEGORY",
+   "variants": [
+    "<띄어쓰기·표기 변형>"
+   ]
+  }
+ ]
+}

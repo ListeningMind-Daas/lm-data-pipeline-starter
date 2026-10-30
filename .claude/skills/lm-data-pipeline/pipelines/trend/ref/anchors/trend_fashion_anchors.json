@@ -1,0 +1,32 @@
+{
+  "category_key": "trend_fashion",
+  "gl": "kr",
+  "vector": "new_trend_discovery",
+  "purpose": "신규 트렌드 발굴 — cluster_finder 검색관계 그래프로 시드에 없는 인접 신규 미감(-코어/-룩 신조어)을 발견. intent_finder(facet 확장)가 구조적으로 못 잡는 영역.",
+  "cadence": "quarterly",
+  "method": [
+    "A. Graph harvest — cluster_finder(rels+communities, hop=1) 로 앵커 그래프 수집",
+    "B. Neologism mining — aesthetic_morphology 패턴으로 미감 후보 추출",
+    "C. Homonym filter — homonym_noise 로 동음이의(영화/근육/커뮤니티) 제거",
+    "D. Novelty filter — 기존 panel/category_rules 와 중복 제거 → 진짜 신규만",
+    "E. Velocity confirm — keyword_info(ads_metrics) vol50+trend0.3 게이팅",
+    "F. Temporal validation(선택) — time_point curr vs 12m, curr 전용 노드 = 신생"
+  ],
+  "cost_warning": "⚠️ cluster_finder ≈ 3,000 크레딧/앵커 (output 50/건). intent_finder의 ~10배. → hop=1 필수, 앵커 분기당 2~4개 제한, temporal diff는 top 앵커만.",
+  "cluster_params": { "hop": 1, "data_type": "all", "orientation": "UNDIRECTED", "limit": 120, "time_point": "curr" },
+
+  "anchors": [
+    { "keyword": "발레코어", "harvested": "2026-06-29", "yield": "블록코어·코케트·걸코어·리본코어·코티지코어·사이버코어 발굴" },
+    { "keyword": "고프코어", "harvested": null },
+    { "keyword": "올드머니룩", "harvested": null },
+    { "keyword": "y2k패션", "harvested": null }
+  ],
+
+  "aesthetic_morphology": ["코어$", "코어 ?룩", "룩$", "코케트", "코케티시", "코켓"],
+  "homonym_noise": ["영화", "넷플릭스", "넷플", "다시 ?보기", "작가", "트위터", "디시", "더쿠",
+                    "근육", "앙 ?아방", "알라스콩", "block core", "더 코어", "core 작가"],
+
+  "velocity_gate": { "emerging_min_vol_avg": 50, "emerging_min_trend": 0.3, "stable_min_vol_avg": 300 },
+  "temporal_validation": { "enabled_for": "top_anchors_only", "compare": ["curr", "12m"],
+                           "rule": "curr 그래프에만 있고 12m 에 없는 노드 = 신생 트렌드(기성 인접과 구분)" }
+}

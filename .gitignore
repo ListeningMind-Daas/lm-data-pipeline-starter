@@ -1,0 +1,17 @@
+# 비밀 — 커밋 금지
+00_Context/.lm-api-key
+.env
+**/.env
+*.p8
+*.pem
+*service-account*.json
+
+# 수집·적재 산출(용량 큼) — 필요하면 따로 관리
+90_Output/*/
+99_Scratch/*
+!90_Output/.gitkeep
+!99_Scratch/.gitkeep
+
+__pycache__/
+*.pyc
+.DS_Store

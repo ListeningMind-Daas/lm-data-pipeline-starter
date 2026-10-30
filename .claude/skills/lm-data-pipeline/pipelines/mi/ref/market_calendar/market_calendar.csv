@@ -1,0 +1,5 @@
+gl,category_key,month,event_name,event_type,seasonality,impact_level,label,version,note
+kr,*,3,신학기·이사·혼수,성수기,peak,mid,추정,이사·혼수 가전 수요 상승
+kr,*,5,가정의달,프로모션,peak,mid,추정,어버이날·가정의달 선물 수요
+kr,*,11,코리아세일페스타·블랙프라이데이,프로모션,peak,high,추정,연중 최대 할인 시즌
+kr,*,12,연말·신년준비,프로모션,peak,mid,추정,연말 프로모션

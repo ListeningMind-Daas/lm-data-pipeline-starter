@@ -1,0 +1,16 @@
+{
+ "category_key": "{category}",
+ "gl": "kr",
+ "discovered": "<YYYY-MM-DD>",
+ "source": "<허브 스캔 등 근거>",
+ "insight": "<이 품목을 사람들이 어떤 축으로 검색하는가>",
+ "dimensions": {
+  "<축 이름 예 USAGE>": {
+   "desc": "<설명>",
+   "members": [
+    "<키워드>"
+   ]
+  }
+ },
+ "usage": "silver 단계에서 키워드에 차원 태그를 붙이고 gold 에서 축별 교차 분석에 쓴다"
+}

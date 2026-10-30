@@ -1,0 +1,66 @@
+﻿### ops.pipeline_runs ###
+run_id:string, gl:string, run_date:date, category_key:string, phase:string, status:string, started_at:timestamp, finished_at:timestamp, duration_sec:int, error_message:string, triggered_by:string, ingested_at:timestamp
+### ops.qc_results ###
+qc_id:string, run_id:string, gl:string, run_date:date, category_key:string, check_name:string, passed:boolean, expected:string, actual:string, severity:string, checked_at:timestamp
+### ops.data_freshness ###
+schema_name:string, table_name:string, gl:string, latest_run_date:date, row_count:bigint, checked_at:timestamp
+### ops.share_changelog ###
+change_id:string, share_name:string, change_type:string, target_table:string, partition_key:string, changed_by:string, changed_at:timestamp, note:string
+### ops.recipient_entitlements ###
+recipient:string, category_key:string, gl:string, valid_from:date, valid_until:date, granted_by:string, granted_at:timestamp
+### gold_reports.report_meta ###
+report_id:string, gl:string, run_date:date, category_key:string, report_type:string, title:string, s3_path:string, file_format:string, file_size_kb:bigint, created_at:timestamp, ingested_at:timestamp
+### gold_reports.report_sections ###
+report_id:string, gl:string, run_date:date, category_key:string, section_order:int, section_title:string, content_md:string, ingested_at:timestamp
+### gold_analytics.tam_analysis ###
+gl:string, run_date:date, category_key:string, segment:string, keyword_count:bigint, total_volume:bigint, volume_share_pct:double, tam_index:double, growth_3m:double, label_derived:string, ingested_at:timestamp
+### gold_analytics.sov_analysis ###
+gl:string, run_date:date, category_key:string, segment:string, brand:string, sov_keyword_cnt:bigint, sov_volume:bigint, sov_pct:double, rank:int, label_derived:string, ingested_at:timestamp
+### gold_analytics.trend_analysis ###
+gl:string, run_date:date, category_key:string, keyword:string, month:string, total_volume:bigint, gg_volume:bigint, nv_volume:bigint, growth_3m:double, acceleration:double, label_volume:string, label_derived:string, ingested_at:timestamp
+### gold_analytics.persona_analysis ###
+gl:string, run_date:date, category_key:string, persona_segment:string, gender:string, age_group:string, intent_primary:string, keyword_count:bigint, volume_share_pct:double, top_keywords:array<string>, label_demography:string, label_intent:string, ingested_at:timestamp
+### gold_analytics.journey_analysis ###
+gl:string, run_date:date, category_key:string, journey_id:string, step_order:int, keyword:string, intent_stage:string, volume_avg:bigint, label_intent:string, ingested_at:timestamp
+### gold_analytics.opportunity_analysis ###
+gl:string, run_date:date, category_key:string, keyword:string, opportunity_score:double, volume_avg:bigint, competition:string, competition_index:bigint, intent_primary:string, growth_3m:double, sov_gap:double, label_volume:string, label_derived:string, ingested_at:timestamp
+### gold_analytics.dashboard_mart ###
+gl:string, run_date:date, category_key:string, category_name:string, tam_total_volume:bigint, tam_index:double, keyword_count:bigint, growth_3m:double, top_brand:string, top_brand_sov_pct:double, focus_brand:string, focus_brand_sov_pct:double, rival_brand:string, rival_brand_sov_pct:double, top_opportunity_keyword:string, top_opportunity_score:double, persona_primary:string, primary_intent:string, label_volume:string, label_derived:string, label_demography:string, label_intent:string, data_quality_flag:string, ingested_at:timestamp
+### ref.brand_rules ###
+gl:string, category_key:string, pattern:string, brand:string, priority:int, version:string, note:string, loaded_at:timestamp
+### ref.category_rules ###
+gl:string, category_key:string, pattern:string, category_lvl1:string, category_lvl2:string, priority:int, version:string, note:string, loaded_at:timestamp
+### ref.noise_patterns ###
+gl:string, category_key:string, pattern:string, match_type:string, scope:string, reason:string, action:string, version:string, note:string, loaded_at:timestamp
+### ref.seed_layer_config ###
+gl:string, category_key:string, layer:string, layer_name:string, description:string, expansion_method:string, target_share_pct:int, priority:int, version:string, note:string, loaded_at:timestamp
+### ref.market_calendar ###
+gl:string, category_key:string, month:int, event_name:string, event_type:string, seasonality:string, impact_level:string, label:string, version:string, note:string, loaded_at:timestamp
+### silver_master.keywords_master ###
+gl:string, run_date:date, category_key:string, keyword:string, canonical_keyword:string, is_variant:boolean, keyword_id:string, pipeline_source:string, volume_avg:bigint, volume_total:bigint, volume_trend:double, gg_volume_avg:bigint, gg_volume_total:bigint, gg_volume_trend:double, nv_volume_avg:bigint, nv_volume_total:bigint, nv_volume_trend:double, intent_primary:string, intent_i:double, intent_n:double, intent_c:double, intent_t:double, competition:string, competition_index:bigint, cpc:double, low_bid_micros:bigint, high_bid_micros:bigint, gender_m_ratio:double, gender_f_ratio:double, age_0_ratio:double, age_13_ratio:double, age_20_ratio:double, age_25_ratio:double, age_30_ratio:double, age_40_ratio:double, age_50_ratio:double, brand:string, category_lvl1:string, category_lvl2:string, seed_layer_origin:string, is_noise:boolean, noise_reason:string, growth_3m:double, acceleration:double, volatility:double, seasonality_peak_index:double, seasonality_peak_month:int, label_volume:string, label_intent:string, label_demography:string, label_derived:string, data_quality_flag:string, noise_filter_version:string, brand_rules_version:string, api_version:string, collected_date:date, source_run_id:string, ingested_at:timestamp
+### silver_master.keyword_monthly ###
+gl:string, run_date:date, category_key:string, keyword:string, keyword_id:string, month:string, gg_volume:bigint, nv_volume:bigint, total_volume:bigint, label_volume:string, ingested_at:timestamp
+### silver_master.keyword_features ###
+gl:string, run_date:date, category_key:string, keyword:string, keyword_id:string, f_ad_top:bigint, f_ad_bottom:bigint, f_ads_top:bigint, f_ads_bottom:bigint, f_featured_snippet:bigint, f_featured_snippet_ordered_list:bigint, f_featured_snippet_unordered_list:bigint, f_featured_snippet_table:bigint, f_featured_snippet_video_exist:bigint, f_ai_overview:bigint, f_images:bigint, f_video_results:bigint, f_video_carousels:bigint, f_organic_results_video:bigint, f_people_also_ask_for:bigint, f_people_also_search_for:bigint, f_related_searches:bigint, f_sitelinks:bigint, f_product_comparison:bigint, f_organic_results_rating:bigint, f_local_results:bigint, f_knowledge_panel:bigint, f_sns:bigint, f_articles:bigint, f_google_play:bigint, f_app_results:bigint, f_job_search:bigint, f_scholar:bigint, f_unit_converter:bigint, f_spell_check:bigint, f_safe_search:bigint, f_adult_certification:bigint, f_sticky_header_tabs:bigint, f_organic_results:bigint, f_others:bigint, f_unknown:bigint, collected_date:date, ingested_at:timestamp
+### silver_master.cluster_master ###
+gl:string, run_date:date, category_key:string, community_id:string, cluster_label:string, top_keywords:array<string>, keyword_count:int, is_empty:boolean, data_quality_flag:string, ingested_at:timestamp
+### silver_master.membership ###
+gl:string, run_date:date, category_key:string, keyword_id:string, keyword:string, community_id:string, weight:double, ingested_at:timestamp
+### seed_design.seed_runs ###
+run_id:string, market:string, gl:string, created_at:date, skill_version:string, total_seeds:int, coverage_pct:double, coverage_label:string, v_denominator_keyword:string, v_denominator_volume:bigint, used_credits:double, ingested_at:timestamp
+### seed_design.seed_keywords ###
+run_id:string, gl:string, market:string, layer:string, sub_group:string, keyword:string, volume_avg:bigint, volume_total:bigint, volume_trend:double, competition:string, cpc:double, label:string, note:string, ingested_at:timestamp
+### seed_design.seed_communities ###
+run_id:string, gl:string, market:string, source_keyword:string, community_id:string, keyword:string, weight:double, hop:int, ingested_at:timestamp
+### seed_design.seed_blind_spots ###
+run_id:string, gl:string, market:string, record_type:string, subject:string, description:string, position:string, recommendation:string, ingested_at:timestamp
+### cost.api_call_log ###
+log_id:string, request_at:timestamp, endpoint:string, gl:string, category_key:string, run_date:date, input_cost:bigint, input_count:bigint, input_total_cost:bigint, output_cost:bigint, output_count:bigint, output_total_cost:bigint, total_cost:bigint, used_credits:bigint, api_version:string, user_type:string, ingested_at:timestamp
+### usage.summary_daily ###
+snapshot_date:date, from_date:date, to_date:date, user_type:string, total_calls:bigint, error_count:bigint, error_rate:double, total_credits:bigint, ingested_at:timestamp
+### usage.by_endpoint ###
+snapshot_date:date, from_date:date, to_date:date, endpoint:string, calls:bigint, ratio:double, err_4xx:bigint, rate_4xx:double, err_5xx:bigint, rate_5xx:double, error_rate:double, credits:bigint, credits_ratio:double, ingested_at:timestamp
+### usage.by_platform ###
+snapshot_date:date, from_date:date, to_date:date, platform:string, calls:bigint, ratio:double, err_4xx:bigint, rate_4xx:double, err_5xx:bigint, rate_5xx:double, error_rate:double, credits:bigint, credits_ratio:double, ingested_at:timestamp
+### usage.timeseries ###
+snapshot_date:date, from_date:date, to_date:date, ref_date:string, calls:bigint, errors:bigint, credits:bigint, ingested_at:timestamp

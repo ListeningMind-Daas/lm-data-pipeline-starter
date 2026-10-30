@@ -1,0 +1,4377 @@
+{
+ "version": "1.0",
+ "note": "적재 설계안 — 층 순서대로 스키마를 만들고 테이블을 싣는다. 엔진 정본 스키마에서 생성한 파일이다(손으로 고치지 않는다 · 엔진을 바꾸면 함께 다시 만든다)",
+ "types": [
+  "string",
+  "int",
+  "bigint",
+  "double",
+  "boolean",
+  "date",
+  "timestamp",
+  "json"
+ ],
+ "lineage": [
+  {
+   "name": "_run_id",
+   "type": "string",
+   "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+  },
+  {
+   "name": "_loaded_at",
+   "type": "timestamp",
+   "comment": "적재 시각(UTC)"
+  }
+ ],
+ "replace_by": "_run_id",
+ "pipelines": {
+  "mi": {
+   "name": "시장 데이터(MI) 메달리온",
+   "run_folder": "{gl}_{category}_{run_date}",
+   "layers": [
+    {
+     "key": "ref",
+     "dir": "98_ref",
+     "name": "룰북 스냅샷",
+     "what": "이 run 에 적용한 브랜드·품목·노이즈·시드 레이어·시즌 규칙",
+     "order": 1
+    },
+    {
+     "key": "seed_design",
+     "dir": "00_seed_design",
+     "name": "시드 설계",
+     "what": "L1~L5 시드와 실행 메타 — 무엇을 수집했는지",
+     "order": 2
+    },
+    {
+     "key": "bronze_raw",
+     "dir": "01_bronze_raw",
+     "name": "원본 응답",
+     "what": "API 응답 1개 = 1행 · 무변형 payload",
+     "order": 3
+    },
+    {
+     "key": "silver_master",
+     "dir": "02_silver_master",
+     "name": "정제",
+     "what": "키워드 마스터·월별 검색량·SERP 피처·클러스터",
+     "order": 4
+    },
+    {
+     "key": "gold_analytics",
+     "dir": "03_gold_analytics",
+     "name": "분석",
+     "what": "시장 규모·점유율·추이·페르소나·여정·기회·대시보드 마트",
+     "order": 5
+    },
+    {
+     "key": "gold_reports",
+     "dir": "04_gold_reports",
+     "name": "리포트",
+     "what": "리포트 메타·섹션",
+     "order": 6
+    },
+    {
+     "key": "cost",
+     "dir": "11_cost",
+     "name": "비용",
+     "what": "호출 1건 = 1행 크레딧 원장",
+     "order": 7
+    },
+    {
+     "key": "usage",
+     "dir": "12_usage",
+     "name": "사용량",
+     "what": "일별·엔드포인트별·시계열 사용량 요약",
+     "order": 8
+    },
+    {
+     "key": "ops",
+     "dir": "99_ops",
+     "name": "운영",
+     "what": "실행 기록·품질 점검·격리·신선도",
+     "order": 9
+    }
+   ],
+   "tables": [
+    {
+     "layer": "ref",
+     "name": "brand_rules",
+     "source": "tables/98_ref/brand_rules.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "pattern",
+       "type": "string"
+      },
+      {
+       "name": "brand",
+       "type": "string"
+      },
+      {
+       "name": "priority",
+       "type": "int"
+      },
+      {
+       "name": "version",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "loaded_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ref",
+     "name": "category_rules",
+     "source": "tables/98_ref/category_rules.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "pattern",
+       "type": "string"
+      },
+      {
+       "name": "category_lvl1",
+       "type": "string"
+      },
+      {
+       "name": "category_lvl2",
+       "type": "string"
+      },
+      {
+       "name": "priority",
+       "type": "int"
+      },
+      {
+       "name": "version",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "loaded_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ref",
+     "name": "market_calendar",
+     "source": "tables/98_ref/market_calendar.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "month",
+       "type": "int"
+      },
+      {
+       "name": "event_name",
+       "type": "string"
+      },
+      {
+       "name": "event_type",
+       "type": "string"
+      },
+      {
+       "name": "seasonality",
+       "type": "string"
+      },
+      {
+       "name": "impact_level",
+       "type": "string"
+      },
+      {
+       "name": "label",
+       "type": "string"
+      },
+      {
+       "name": "version",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "loaded_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ref",
+     "name": "noise_patterns",
+     "source": "tables/98_ref/noise_patterns.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "pattern",
+       "type": "string"
+      },
+      {
+       "name": "match_type",
+       "type": "string"
+      },
+      {
+       "name": "scope",
+       "type": "string"
+      },
+      {
+       "name": "reason",
+       "type": "string"
+      },
+      {
+       "name": "action",
+       "type": "string"
+      },
+      {
+       "name": "version",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "loaded_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ref",
+     "name": "seed_layer_config",
+     "source": "tables/98_ref/seed_layer_config.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "layer",
+       "type": "string"
+      },
+      {
+       "name": "layer_name",
+       "type": "string"
+      },
+      {
+       "name": "description",
+       "type": "string"
+      },
+      {
+       "name": "expansion_method",
+       "type": "string"
+      },
+      {
+       "name": "target_share_pct",
+       "type": "int"
+      },
+      {
+       "name": "priority",
+       "type": "int"
+      },
+      {
+       "name": "version",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "loaded_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "seed_design",
+     "name": "seed_blind_spots",
+     "source": "tables/00_seed_design/seed_blind_spots.csv",
+     "partition": [
+      "gl"
+     ],
+     "columns": [
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "market",
+       "type": "string"
+      },
+      {
+       "name": "record_type",
+       "type": "string"
+      },
+      {
+       "name": "subject",
+       "type": "string"
+      },
+      {
+       "name": "description",
+       "type": "string"
+      },
+      {
+       "name": "position",
+       "type": "string"
+      },
+      {
+       "name": "recommendation",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "seed_design",
+     "name": "seed_communities",
+     "source": "tables/00_seed_design/seed_communities.csv",
+     "partition": [
+      "gl"
+     ],
+     "columns": [
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "market",
+       "type": "string"
+      },
+      {
+       "name": "source_keyword",
+       "type": "string"
+      },
+      {
+       "name": "community_id",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "weight",
+       "type": "double"
+      },
+      {
+       "name": "hop",
+       "type": "int"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "seed_design",
+     "name": "seed_keywords",
+     "source": "tables/00_seed_design/seed_keywords.csv",
+     "partition": [
+      "gl",
+      "layer"
+     ],
+     "columns": [
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "market",
+       "type": "string"
+      },
+      {
+       "name": "layer",
+       "type": "string"
+      },
+      {
+       "name": "sub_group",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_total",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_trend",
+       "type": "double"
+      },
+      {
+       "name": "competition",
+       "type": "string"
+      },
+      {
+       "name": "cpc",
+       "type": "double"
+      },
+      {
+       "name": "label",
+       "type": "string"
+      },
+      {
+       "name": "note",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "seed_design",
+     "name": "seed_runs",
+     "source": "tables/00_seed_design/seed_runs.csv",
+     "partition": [
+      "gl"
+     ],
+     "columns": [
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "market",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "created_at",
+       "type": "date"
+      },
+      {
+       "name": "skill_version",
+       "type": "string"
+      },
+      {
+       "name": "total_seeds",
+       "type": "int"
+      },
+      {
+       "name": "coverage_pct",
+       "type": "double"
+      },
+      {
+       "name": "coverage_label",
+       "type": "string"
+      },
+      {
+       "name": "v_denominator_keyword",
+       "type": "string"
+      },
+      {
+       "name": "v_denominator_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "used_credits",
+       "type": "double"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "bronze_raw",
+     "name": "cluster_finder_raw",
+     "source": "tables/01_bronze_raw/cluster_finder_raw.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "source_file",
+       "type": "string"
+      },
+      {
+       "name": "source_file_hash",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "request_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "payload",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "bronze_raw",
+     "name": "intent_finder_raw",
+     "source": "tables/01_bronze_raw/intent_finder_raw.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "source_file",
+       "type": "string"
+      },
+      {
+       "name": "source_file_hash",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "request_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "payload",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "bronze_raw",
+     "name": "keyword_info_raw",
+     "source": "tables/01_bronze_raw/keyword_info_raw.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "source_file",
+       "type": "string"
+      },
+      {
+       "name": "source_file_hash",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "request_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "payload",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "bronze_raw",
+     "name": "path_finder_raw",
+     "source": "tables/01_bronze_raw/path_finder_raw.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "source_file",
+       "type": "string"
+      },
+      {
+       "name": "source_file_hash",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "request_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "payload",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "silver_master",
+     "name": "cluster_master",
+     "source": "tables/02_silver_master/cluster_master.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "community_id",
+       "type": "string"
+      },
+      {
+       "name": "cluster_label",
+       "type": "string"
+      },
+      {
+       "name": "top_keywords",
+       "type": "json"
+      },
+      {
+       "name": "keyword_count",
+       "type": "int"
+      },
+      {
+       "name": "is_empty",
+       "type": "boolean"
+      },
+      {
+       "name": "data_quality_flag",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "silver_master",
+     "name": "keyword_features",
+     "source": "tables/02_silver_master/keyword_features.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "keyword_id",
+       "type": "string"
+      },
+      {
+       "name": "f_ad_top",
+       "type": "bigint"
+      },
+      {
+       "name": "f_ad_bottom",
+       "type": "bigint"
+      },
+      {
+       "name": "f_ads_top",
+       "type": "bigint"
+      },
+      {
+       "name": "f_ads_bottom",
+       "type": "bigint"
+      },
+      {
+       "name": "f_featured_snippet",
+       "type": "bigint"
+      },
+      {
+       "name": "f_featured_snippet_ordered_list",
+       "type": "bigint"
+      },
+      {
+       "name": "f_featured_snippet_unordered_list",
+       "type": "bigint"
+      },
+      {
+       "name": "f_featured_snippet_table",
+       "type": "bigint"
+      },
+      {
+       "name": "f_featured_snippet_video_exist",
+       "type": "bigint"
+      },
+      {
+       "name": "f_ai_overview",
+       "type": "bigint"
+      },
+      {
+       "name": "f_images",
+       "type": "bigint"
+      },
+      {
+       "name": "f_video_results",
+       "type": "bigint"
+      },
+      {
+       "name": "f_video_carousels",
+       "type": "bigint"
+      },
+      {
+       "name": "f_organic_results_video",
+       "type": "bigint"
+      },
+      {
+       "name": "f_people_also_ask_for",
+       "type": "bigint"
+      },
+      {
+       "name": "f_people_also_search_for",
+       "type": "bigint"
+      },
+      {
+       "name": "f_related_searches",
+       "type": "bigint"
+      },
+      {
+       "name": "f_sitelinks",
+       "type": "bigint"
+      },
+      {
+       "name": "f_product_comparison",
+       "type": "bigint"
+      },
+      {
+       "name": "f_organic_results_rating",
+       "type": "bigint"
+      },
+      {
+       "name": "f_local_results",
+       "type": "bigint"
+      },
+      {
+       "name": "f_knowledge_panel",
+       "type": "bigint"
+      },
+      {
+       "name": "f_sns",
+       "type": "bigint"
+      },
+      {
+       "name": "f_articles",
+       "type": "bigint"
+      },
+      {
+       "name": "f_google_play",
+       "type": "bigint"
+      },
+      {
+       "name": "f_app_results",
+       "type": "bigint"
+      },
+      {
+       "name": "f_job_search",
+       "type": "bigint"
+      },
+      {
+       "name": "f_scholar",
+       "type": "bigint"
+      },
+      {
+       "name": "f_unit_converter",
+       "type": "bigint"
+      },
+      {
+       "name": "f_spell_check",
+       "type": "bigint"
+      },
+      {
+       "name": "f_safe_search",
+       "type": "bigint"
+      },
+      {
+       "name": "f_adult_certification",
+       "type": "bigint"
+      },
+      {
+       "name": "f_sticky_header_tabs",
+       "type": "bigint"
+      },
+      {
+       "name": "f_organic_results",
+       "type": "bigint"
+      },
+      {
+       "name": "f_others",
+       "type": "bigint"
+      },
+      {
+       "name": "f_unknown",
+       "type": "bigint"
+      },
+      {
+       "name": "collected_date",
+       "type": "date"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "silver_master",
+     "name": "keyword_monthly",
+     "source": "tables/02_silver_master/keyword_monthly.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "keyword_id",
+       "type": "string"
+      },
+      {
+       "name": "month",
+       "type": "string"
+      },
+      {
+       "name": "gg_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "nv_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "total_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "label_volume",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "silver_master",
+     "name": "keywords_master",
+     "source": "tables/02_silver_master/keywords_master.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "canonical_keyword",
+       "type": "string"
+      },
+      {
+       "name": "is_variant",
+       "type": "boolean"
+      },
+      {
+       "name": "keyword_id",
+       "type": "string"
+      },
+      {
+       "name": "pipeline_source",
+       "type": "string"
+      },
+      {
+       "name": "volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_total",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_trend",
+       "type": "double"
+      },
+      {
+       "name": "gg_volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "gg_volume_total",
+       "type": "bigint"
+      },
+      {
+       "name": "gg_volume_trend",
+       "type": "double"
+      },
+      {
+       "name": "nv_volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "nv_volume_total",
+       "type": "bigint"
+      },
+      {
+       "name": "nv_volume_trend",
+       "type": "double"
+      },
+      {
+       "name": "intent_primary",
+       "type": "string"
+      },
+      {
+       "name": "intent_i",
+       "type": "double"
+      },
+      {
+       "name": "intent_n",
+       "type": "double"
+      },
+      {
+       "name": "intent_c",
+       "type": "double"
+      },
+      {
+       "name": "intent_t",
+       "type": "double"
+      },
+      {
+       "name": "competition",
+       "type": "string"
+      },
+      {
+       "name": "competition_index",
+       "type": "bigint"
+      },
+      {
+       "name": "cpc",
+       "type": "double"
+      },
+      {
+       "name": "low_bid_micros",
+       "type": "bigint"
+      },
+      {
+       "name": "high_bid_micros",
+       "type": "bigint"
+      },
+      {
+       "name": "gender_m_ratio",
+       "type": "double"
+      },
+      {
+       "name": "gender_f_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_0_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_13_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_20_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_25_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_30_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_40_ratio",
+       "type": "double"
+      },
+      {
+       "name": "age_50_ratio",
+       "type": "double"
+      },
+      {
+       "name": "brand",
+       "type": "string"
+      },
+      {
+       "name": "category_lvl1",
+       "type": "string"
+      },
+      {
+       "name": "category_lvl2",
+       "type": "string"
+      },
+      {
+       "name": "seed_layer_origin",
+       "type": "string"
+      },
+      {
+       "name": "is_noise",
+       "type": "boolean"
+      },
+      {
+       "name": "noise_reason",
+       "type": "string"
+      },
+      {
+       "name": "growth_3m",
+       "type": "double"
+      },
+      {
+       "name": "acceleration",
+       "type": "double"
+      },
+      {
+       "name": "volatility",
+       "type": "double"
+      },
+      {
+       "name": "seasonality_peak_index",
+       "type": "double"
+      },
+      {
+       "name": "seasonality_peak_month",
+       "type": "int"
+      },
+      {
+       "name": "label_volume",
+       "type": "string"
+      },
+      {
+       "name": "label_intent",
+       "type": "string"
+      },
+      {
+       "name": "label_demography",
+       "type": "string"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "data_quality_flag",
+       "type": "string"
+      },
+      {
+       "name": "noise_filter_version",
+       "type": "string"
+      },
+      {
+       "name": "brand_rules_version",
+       "type": "string"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "collected_date",
+       "type": "date"
+      },
+      {
+       "name": "source_run_id",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "silver_master",
+     "name": "membership",
+     "source": "tables/02_silver_master/membership.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword_id",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "community_id",
+       "type": "string"
+      },
+      {
+       "name": "weight",
+       "type": "double"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "dashboard_mart",
+     "source": "tables/03_gold_analytics/dashboard_mart.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "category_name",
+       "type": "string"
+      },
+      {
+       "name": "tam_total_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "tam_index",
+       "type": "double"
+      },
+      {
+       "name": "keyword_count",
+       "type": "bigint"
+      },
+      {
+       "name": "growth_3m",
+       "type": "double"
+      },
+      {
+       "name": "top_brand",
+       "type": "string"
+      },
+      {
+       "name": "top_brand_sov_pct",
+       "type": "double"
+      },
+      {
+       "name": "focus_brand",
+       "type": "string"
+      },
+      {
+       "name": "focus_brand_sov_pct",
+       "type": "double"
+      },
+      {
+       "name": "rival_brand",
+       "type": "string"
+      },
+      {
+       "name": "rival_brand_sov_pct",
+       "type": "double"
+      },
+      {
+       "name": "top_opportunity_keyword",
+       "type": "string"
+      },
+      {
+       "name": "top_opportunity_score",
+       "type": "double"
+      },
+      {
+       "name": "persona_primary",
+       "type": "string"
+      },
+      {
+       "name": "primary_intent",
+       "type": "string"
+      },
+      {
+       "name": "label_volume",
+       "type": "string"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "label_demography",
+       "type": "string"
+      },
+      {
+       "name": "label_intent",
+       "type": "string"
+      },
+      {
+       "name": "data_quality_flag",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "journey_analysis",
+     "source": "tables/03_gold_analytics/journey_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "journey_id",
+       "type": "string"
+      },
+      {
+       "name": "step_order",
+       "type": "int"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "intent_stage",
+       "type": "string"
+      },
+      {
+       "name": "volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "label_intent",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "opportunity_analysis",
+     "source": "tables/03_gold_analytics/opportunity_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "opportunity_score",
+       "type": "double"
+      },
+      {
+       "name": "volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "competition",
+       "type": "string"
+      },
+      {
+       "name": "competition_index",
+       "type": "bigint"
+      },
+      {
+       "name": "intent_primary",
+       "type": "string"
+      },
+      {
+       "name": "growth_3m",
+       "type": "double"
+      },
+      {
+       "name": "sov_gap",
+       "type": "double"
+      },
+      {
+       "name": "label_volume",
+       "type": "string"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "persona_analysis",
+     "source": "tables/03_gold_analytics/persona_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "persona_segment",
+       "type": "string"
+      },
+      {
+       "name": "gender",
+       "type": "string"
+      },
+      {
+       "name": "age_group",
+       "type": "string"
+      },
+      {
+       "name": "intent_primary",
+       "type": "string"
+      },
+      {
+       "name": "keyword_count",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_share_pct",
+       "type": "double"
+      },
+      {
+       "name": "top_keywords",
+       "type": "json"
+      },
+      {
+       "name": "label_demography",
+       "type": "string"
+      },
+      {
+       "name": "label_intent",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "sov_analysis",
+     "source": "tables/03_gold_analytics/sov_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "segment",
+       "type": "string"
+      },
+      {
+       "name": "brand",
+       "type": "string"
+      },
+      {
+       "name": "sov_keyword_cnt",
+       "type": "bigint"
+      },
+      {
+       "name": "sov_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "sov_pct",
+       "type": "double"
+      },
+      {
+       "name": "rank",
+       "type": "int"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "tam_analysis",
+     "source": "tables/03_gold_analytics/tam_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "segment",
+       "type": "string"
+      },
+      {
+       "name": "keyword_count",
+       "type": "bigint"
+      },
+      {
+       "name": "total_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_share_pct",
+       "type": "double"
+      },
+      {
+       "name": "tam_index",
+       "type": "double"
+      },
+      {
+       "name": "growth_3m",
+       "type": "double"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_analytics",
+     "name": "trend_analysis",
+     "source": "tables/03_gold_analytics/trend_analysis.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "month",
+       "type": "string"
+      },
+      {
+       "name": "total_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "gg_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "nv_volume",
+       "type": "bigint"
+      },
+      {
+       "name": "growth_3m",
+       "type": "double"
+      },
+      {
+       "name": "acceleration",
+       "type": "double"
+      },
+      {
+       "name": "label_volume",
+       "type": "string"
+      },
+      {
+       "name": "label_derived",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_reports",
+     "name": "report_meta",
+     "source": "tables/04_gold_reports/report_meta.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "report_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "report_type",
+       "type": "string"
+      },
+      {
+       "name": "title",
+       "type": "string"
+      },
+      {
+       "name": "s3_path",
+       "type": "string"
+      },
+      {
+       "name": "file_format",
+       "type": "string"
+      },
+      {
+       "name": "file_size_kb",
+       "type": "bigint"
+      },
+      {
+       "name": "created_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "gold_reports",
+     "name": "report_sections",
+     "source": "tables/04_gold_reports/report_sections.csv",
+     "partition": [
+      "gl",
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "report_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "section_order",
+       "type": "int"
+      },
+      {
+       "name": "section_title",
+       "type": "string"
+      },
+      {
+       "name": "content_md",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "cost",
+     "name": "api_call_log",
+     "source": "tables/11_cost/api_call_log.csv",
+     "partition": [
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "log_id",
+       "type": "string"
+      },
+      {
+       "name": "request_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "endpoint",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "input_cost",
+       "type": "bigint"
+      },
+      {
+       "name": "input_count",
+       "type": "bigint"
+      },
+      {
+       "name": "input_total_cost",
+       "type": "bigint"
+      },
+      {
+       "name": "output_cost",
+       "type": "bigint"
+      },
+      {
+       "name": "output_count",
+       "type": "bigint"
+      },
+      {
+       "name": "output_total_cost",
+       "type": "bigint"
+      },
+      {
+       "name": "total_cost",
+       "type": "bigint"
+      },
+      {
+       "name": "used_credits",
+       "type": "bigint"
+      },
+      {
+       "name": "api_version",
+       "type": "string"
+      },
+      {
+       "name": "user_type",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "usage",
+     "name": "by_endpoint",
+     "source": "tables/12_usage/by_endpoint.csv",
+     "partition": [
+      "snapshot_date"
+     ],
+     "columns": [
+      {
+       "name": "snapshot_date",
+       "type": "date"
+      },
+      {
+       "name": "from_date",
+       "type": "date"
+      },
+      {
+       "name": "to_date",
+       "type": "date"
+      },
+      {
+       "name": "endpoint",
+       "type": "string"
+      },
+      {
+       "name": "calls",
+       "type": "bigint"
+      },
+      {
+       "name": "ratio",
+       "type": "double"
+      },
+      {
+       "name": "err_4xx",
+       "type": "bigint"
+      },
+      {
+       "name": "rate_4xx",
+       "type": "double"
+      },
+      {
+       "name": "err_5xx",
+       "type": "bigint"
+      },
+      {
+       "name": "rate_5xx",
+       "type": "double"
+      },
+      {
+       "name": "error_rate",
+       "type": "double"
+      },
+      {
+       "name": "credits",
+       "type": "bigint"
+      },
+      {
+       "name": "credits_ratio",
+       "type": "double"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "usage",
+     "name": "by_platform",
+     "source": "tables/12_usage/by_platform.csv",
+     "partition": [
+      "snapshot_date"
+     ],
+     "columns": [
+      {
+       "name": "snapshot_date",
+       "type": "date"
+      },
+      {
+       "name": "from_date",
+       "type": "date"
+      },
+      {
+       "name": "to_date",
+       "type": "date"
+      },
+      {
+       "name": "platform",
+       "type": "string"
+      },
+      {
+       "name": "calls",
+       "type": "bigint"
+      },
+      {
+       "name": "ratio",
+       "type": "double"
+      },
+      {
+       "name": "err_4xx",
+       "type": "bigint"
+      },
+      {
+       "name": "rate_4xx",
+       "type": "double"
+      },
+      {
+       "name": "err_5xx",
+       "type": "bigint"
+      },
+      {
+       "name": "rate_5xx",
+       "type": "double"
+      },
+      {
+       "name": "error_rate",
+       "type": "double"
+      },
+      {
+       "name": "credits",
+       "type": "bigint"
+      },
+      {
+       "name": "credits_ratio",
+       "type": "double"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "usage",
+     "name": "summary_daily",
+     "source": "tables/12_usage/summary_daily.csv",
+     "partition": [
+      "snapshot_date"
+     ],
+     "columns": [
+      {
+       "name": "snapshot_date",
+       "type": "date"
+      },
+      {
+       "name": "from_date",
+       "type": "date"
+      },
+      {
+       "name": "to_date",
+       "type": "date"
+      },
+      {
+       "name": "user_type",
+       "type": "string"
+      },
+      {
+       "name": "total_calls",
+       "type": "bigint"
+      },
+      {
+       "name": "error_count",
+       "type": "bigint"
+      },
+      {
+       "name": "error_rate",
+       "type": "double"
+      },
+      {
+       "name": "total_credits",
+       "type": "bigint"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "usage",
+     "name": "timeseries",
+     "source": "tables/12_usage/timeseries.csv",
+     "partition": [
+      "snapshot_date"
+     ],
+     "columns": [
+      {
+       "name": "snapshot_date",
+       "type": "date"
+      },
+      {
+       "name": "from_date",
+       "type": "date"
+      },
+      {
+       "name": "to_date",
+       "type": "date"
+      },
+      {
+       "name": "ref_date",
+       "type": "string"
+      },
+      {
+       "name": "calls",
+       "type": "bigint"
+      },
+      {
+       "name": "errors",
+       "type": "bigint"
+      },
+      {
+       "name": "credits",
+       "type": "bigint"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ops",
+     "name": "data_freshness",
+     "source": "tables/99_ops/data_freshness.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "schema_name",
+       "type": "string"
+      },
+      {
+       "name": "table_name",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "latest_run_date",
+       "type": "date"
+      },
+      {
+       "name": "row_count",
+       "type": "bigint"
+      },
+      {
+       "name": "checked_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ops",
+     "name": "pipeline_runs",
+     "source": "tables/99_ops/pipeline_runs.csv",
+     "partition": [
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "phase",
+       "type": "string"
+      },
+      {
+       "name": "status",
+       "type": "string"
+      },
+      {
+       "name": "started_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "finished_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "duration_sec",
+       "type": "int"
+      },
+      {
+       "name": "error_message",
+       "type": "string"
+      },
+      {
+       "name": "triggered_by",
+       "type": "string"
+      },
+      {
+       "name": "ingested_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ops",
+     "name": "qc_results",
+     "source": "tables/99_ops/qc_results.csv",
+     "partition": [
+      "run_date"
+     ],
+     "columns": [
+      {
+       "name": "qc_id",
+       "type": "string"
+      },
+      {
+       "name": "run_id",
+       "type": "string"
+      },
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "check_name",
+       "type": "string"
+      },
+      {
+       "name": "passed",
+       "type": "boolean"
+      },
+      {
+       "name": "expected",
+       "type": "string"
+      },
+      {
+       "name": "actual",
+       "type": "string"
+      },
+      {
+       "name": "severity",
+       "type": "string"
+      },
+      {
+       "name": "checked_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "ops",
+     "name": "silver_quarantine",
+     "source": "tables/99_ops/silver_quarantine.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "gl",
+       "type": "string"
+      },
+      {
+       "name": "run_date",
+       "type": "date"
+      },
+      {
+       "name": "category_key",
+       "type": "string"
+      },
+      {
+       "name": "keyword_id",
+       "type": "string"
+      },
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "community_id",
+       "type": "string"
+      },
+      {
+       "name": "month",
+       "type": "string"
+      },
+      {
+       "name": "row_json",
+       "type": "string"
+      },
+      {
+       "name": "quarantine_reason",
+       "type": "string"
+      },
+      {
+       "name": "quarantined_at",
+       "type": "timestamp"
+      },
+      {
+       "name": "source_run_id",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    }
+   ]
+  },
+  "trend": {
+   "name": "트렌드 유니버스",
+   "run_folder": "{gl}_{category}_{run_date}",
+   "layers": [
+    {
+     "key": "DESIGN",
+     "dir": "frame_design",
+     "name": "프레임 설계",
+     "what": "L0 프레임 노드 → L1 후보 → L2 속도 판정",
+     "order": 1
+    },
+    {
+     "key": "BRONZE",
+     "dir": "bronze",
+     "name": "원본 응답",
+     "what": "API 응답 파일 매니페스트(파일 1개 = 1행)",
+     "order": 2
+    },
+    {
+     "key": "SILVER",
+     "dir": "silver",
+     "name": "정제",
+     "what": "키워드 마스터·월별·피처·태깅·확장·브랜드",
+     "order": 3
+    },
+    {
+     "key": "GOLD",
+     "dir": "gold",
+     "name": "분석",
+     "what": "트렌드 스코어·랭킹·브랜드 점유율·태그 모멘텀·발견 후보",
+     "order": 4
+    },
+    {
+     "key": "COST",
+     "dir": "cost",
+     "name": "비용",
+     "what": "호출 로그·단계별 요약",
+     "order": 5
+    },
+    {
+     "key": "META",
+     "dir": "meta",
+     "name": "메타",
+     "what": "run 매니페스트·시드(프레임) 설계 기록",
+     "order": 6
+    }
+   ],
+   "tables": [
+    {
+     "layer": "DESIGN",
+     "name": "FRAME_NODES",
+     "source": "frame_design/frame_nodes.json",
+     "partition": [],
+     "columns": [
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "axis",
+       "type": "string"
+      },
+      {
+       "name": "group",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "DESIGN",
+     "name": "L1_CANDIDATES",
+     "source": "frame_design/l1_candidates.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "volume_hint",
+       "type": "bigint"
+      },
+      {
+       "name": "n_sources",
+       "type": "int"
+      },
+      {
+       "name": "sources",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "DESIGN",
+     "name": "L2_GATE_RESULTS",
+     "source": "frame_design/l2_gate_results.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "keyword",
+       "type": "string"
+      },
+      {
+       "name": "volume_avg",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_total",
+       "type": "bigint"
+      },
+      {
+       "name": "volume_trend",
+       "type": "double"
+      },
+      {
+       "name": "gate",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "BRONZE",
+     "name": "RAW_API_RESPONSES",
+     "source": "bronze/RAW_API_RESPONSES.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "SOURCE_FILE",
+       "type": "string"
+      },
+      {
+       "name": "API",
+       "type": "string"
+      },
+      {
+       "name": "RUN_DATE",
+       "type": "string"
+      },
+      {
+       "name": "LOADED_AT",
+       "type": "timestamp"
+      },
+      {
+       "name": "PAYLOAD",
+       "type": "json"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "BRAND_MASTER",
+     "source": "silver/BRAND_MASTER.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "BRAND",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "VOL_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOL_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "TREND",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "KEYWORDS_EXPANDED",
+     "source": "silver/KEYWORDS_EXPANDED.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "TYPE",
+       "type": "string"
+      },
+      {
+       "name": "DIMENSION",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "NV_SHARE",
+       "type": "double"
+      },
+      {
+       "name": "VARIANTS",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "KEYWORDS_FEATURES",
+     "source": "silver/KEYWORDS_FEATURES.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "GL",
+       "type": "string"
+      },
+      {
+       "name": "F_AD",
+       "type": "bigint"
+      },
+      {
+       "name": "F_AD_BOTTOM",
+       "type": "bigint"
+      },
+      {
+       "name": "F_AD_TOP",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ADS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ADS_BOTTOM",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ADS_TOP",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ADULT_CERTIFICATION",
+       "type": "bigint"
+      },
+      {
+       "name": "F_AI_OVERVIEW",
+       "type": "bigint"
+      },
+      {
+       "name": "F_APP_RESULTS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ARTICLES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_BROADEN_SEARCHES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_DISCOVER_MORE_PLACES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_FEATURED_SNIPPET",
+       "type": "bigint"
+      },
+      {
+       "name": "F_FEATURED_SNIPPET_ORDERED_LIST",
+       "type": "bigint"
+      },
+      {
+       "name": "F_FEATURED_SNIPPET_TABLE",
+       "type": "bigint"
+      },
+      {
+       "name": "F_FEATURED_SNIPPET_UNORDERED_LIST",
+       "type": "bigint"
+      },
+      {
+       "name": "F_FEATURED_SNIPPET_VIDEO_EXIST",
+       "type": "bigint"
+      },
+      {
+       "name": "F_GOOGLE_PLAY",
+       "type": "bigint"
+      },
+      {
+       "name": "F_IMAGES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_JOB_SEARCH",
+       "type": "bigint"
+      },
+      {
+       "name": "F_KNOWLEDGE_PANEL",
+       "type": "bigint"
+      },
+      {
+       "name": "F_KNOWLEDGE_PANEL_APPOINTMENT",
+       "type": "bigint"
+      },
+      {
+       "name": "F_KNOWLEDGE_PANEL_LOCAL",
+       "type": "bigint"
+      },
+      {
+       "name": "F_LOCAL_RESULTS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ORGANIC_RESULTS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ORGANIC_RESULTS_RATING",
+       "type": "bigint"
+      },
+      {
+       "name": "F_ORGANIC_RESULTS_VIDEO",
+       "type": "bigint"
+      },
+      {
+       "name": "F_OTHERS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_PEOPLE_ALSO_ASK_FOR",
+       "type": "bigint"
+      },
+      {
+       "name": "F_PEOPLE_ALSO_SEARCH_FOR",
+       "type": "bigint"
+      },
+      {
+       "name": "F_PEOPLE_SEARCH_NEXT",
+       "type": "bigint"
+      },
+      {
+       "name": "F_PRODUCT_COMPARISON",
+       "type": "bigint"
+      },
+      {
+       "name": "F_REFINED_SEARCHES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_RELATED_SEARCHES",
+       "type": "bigint"
+      },
+      {
+       "name": "F_SAFE_SEARCH",
+       "type": "bigint"
+      },
+      {
+       "name": "F_SCHOLAR",
+       "type": "bigint"
+      },
+      {
+       "name": "F_SITELINKS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_SNS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_SPELL_CHECK",
+       "type": "bigint"
+      },
+      {
+       "name": "F_STICKY_HEADER_TABS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_TWITTER",
+       "type": "bigint"
+      },
+      {
+       "name": "F_UNIT_CONVERTER",
+       "type": "bigint"
+      },
+      {
+       "name": "F_UNKNOWN",
+       "type": "bigint"
+      },
+      {
+       "name": "F_VIDEO_CAROUSELS",
+       "type": "bigint"
+      },
+      {
+       "name": "F_VIDEO_RESULTS",
+       "type": "bigint"
+      },
+      {
+       "name": "COLLECTED_DATE",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "KEYWORDS_MASTER",
+     "source": "silver/KEYWORDS_MASTER.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "IS_VARIANT",
+       "type": "bigint"
+      },
+      {
+       "name": "GL",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "GG_VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "GG_VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "GG_VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "NV_VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "NV_VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "NV_VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "NV_SHARE",
+       "type": "double"
+      },
+      {
+       "name": "INTENT_PRIMARY",
+       "type": "string"
+      },
+      {
+       "name": "INTENT_I",
+       "type": "bigint"
+      },
+      {
+       "name": "INTENT_N",
+       "type": "bigint"
+      },
+      {
+       "name": "INTENT_C",
+       "type": "bigint"
+      },
+      {
+       "name": "INTENT_T",
+       "type": "bigint"
+      },
+      {
+       "name": "COMPETITION",
+       "type": "string"
+      },
+      {
+       "name": "COMPETITION_INDEX",
+       "type": "bigint"
+      },
+      {
+       "name": "CPC",
+       "type": "double"
+      },
+      {
+       "name": "LOW_BID_MICROS",
+       "type": "bigint"
+      },
+      {
+       "name": "HIGH_BID_MICROS",
+       "type": "bigint"
+      },
+      {
+       "name": "GENDER_M_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "GENDER_F_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_0_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_13_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_20_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_25_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_30_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_40_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "AGE_50_RATIO",
+       "type": "double"
+      },
+      {
+       "name": "COLLECTED_DATE",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "KEYWORDS_MONTHLY",
+     "source": "silver/KEYWORDS_MONTHLY.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "GL",
+       "type": "string"
+      },
+      {
+       "name": "MONTH",
+       "type": "string"
+      },
+      {
+       "name": "GG_VOLUME",
+       "type": "bigint"
+      },
+      {
+       "name": "NV_VOLUME",
+       "type": "double"
+      },
+      {
+       "name": "TOTAL_VOLUME",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "SILVER",
+     "name": "KEYWORDS_TAGGED",
+     "source": "silver/KEYWORDS_TAGGED.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "SOURCE",
+       "type": "string"
+      },
+      {
+       "name": "CANONICAL",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "DIM_BODY",
+       "type": "string"
+      },
+      {
+       "name": "DIM_OCCASION",
+       "type": "string"
+      },
+      {
+       "name": "DIM_MODIFIER",
+       "type": "string"
+      },
+      {
+       "name": "DIM_GENDER",
+       "type": "string"
+      },
+      {
+       "name": "DIM_SEASON",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "BRAND_MONITOR",
+     "source": "gold/BRAND_MONITOR.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "BRAND",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "RANK",
+       "type": "bigint"
+      },
+      {
+       "name": "SOV",
+       "type": "double"
+      },
+      {
+       "name": "CUM_SOV",
+       "type": "double"
+      },
+      {
+       "name": "TREND",
+       "type": "double"
+      },
+      {
+       "name": "RISING",
+       "type": "boolean"
+      },
+      {
+       "name": "COVERED_80",
+       "type": "boolean"
+      },
+      {
+       "name": "RANK_DELTA",
+       "type": "double"
+      },
+      {
+       "name": "SOV_DELTA",
+       "type": "double"
+      },
+      {
+       "name": "CHANGE_CLASS",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "BRAND_SOV",
+     "source": "gold/BRAND_SOV.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "RANK",
+       "type": "bigint"
+      },
+      {
+       "name": "BRAND",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "VOL_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "SOV",
+       "type": "double"
+      },
+      {
+       "name": "CUM_SOV",
+       "type": "double"
+      },
+      {
+       "name": "COVERED_80",
+       "type": "boolean"
+      },
+      {
+       "name": "RISING",
+       "type": "boolean"
+      },
+      {
+       "name": "TREND",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "BRAND_TREND_LINK",
+     "source": "gold/BRAND_TREND_LINK.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "BRAND",
+       "type": "string"
+      },
+      {
+       "name": "TREND",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "COVERAGE_GAP_AUDIT",
+     "source": "gold/COVERAGE_GAP_AUDIT.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "STATUS",
+       "type": "string"
+      },
+      {
+       "name": "VOL_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOL_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "TREND",
+       "type": "double"
+      },
+      {
+       "name": "TIER",
+       "type": "string"
+      },
+      {
+       "name": "SEASONAL_WINTER",
+       "type": "bigint"
+      },
+      {
+       "name": "TREND_LINK",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "DIMENSION_CROSSTAB",
+     "source": "gold/DIMENSION_CROSSTAB.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL",
+       "type": "string"
+      },
+      {
+       "name": "N_KEYWORDS",
+       "type": "bigint"
+      },
+      {
+       "name": "MALE",
+       "type": "bigint"
+      },
+      {
+       "name": "FEMALE",
+       "type": "bigint"
+      },
+      {
+       "name": "SUMMER",
+       "type": "bigint"
+      },
+      {
+       "name": "WINTER",
+       "type": "bigint"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "DISCOVERY_CANDIDATES_V2",
+     "source": "gold/DISCOVERY_CANDIDATES_V2.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "SEED",
+       "type": "string"
+      },
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "DISCOVERY_GATED",
+     "source": "gold/DISCOVERY_GATED.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEED",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "INCLUSION_STATUS",
+       "type": "string"
+      },
+      {
+       "name": "BREAKOUT",
+       "type": "bigint"
+      },
+      {
+       "name": "PROMOTE",
+       "type": "bigint"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "EXPANSION_SCORECARD",
+     "source": "gold/EXPANSION_SCORECARD.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "TYPE",
+       "type": "string"
+      },
+      {
+       "name": "DIMENSION",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "NV_SHARE",
+       "type": "double"
+      },
+      {
+       "name": "VARIANTS",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "GOLD_TAG_MOMENTUM",
+     "source": "gold/GOLD_TAG_MOMENTUM.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL",
+       "type": "string"
+      },
+      {
+       "name": "AXIS",
+       "type": "string"
+      },
+      {
+       "name": "DIM_VALUE",
+       "type": "string"
+      },
+      {
+       "name": "N_KEYWORDS",
+       "type": "bigint"
+      },
+      {
+       "name": "VOL_AVG_SUM",
+       "type": "bigint"
+      },
+      {
+       "name": "TREND_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "MOMENTUM",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "KEYWORD_SCORECARD",
+     "source": "gold/KEYWORD_SCORECARD.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "VARIANT_COUNT",
+       "type": "bigint"
+      },
+      {
+       "name": "VARIANTS",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "NV_SHARE",
+       "type": "double"
+      },
+      {
+       "name": "COMPETITION_INDEX_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "CPC_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "DOMINANT_INTENT",
+       "type": "string"
+      },
+      {
+       "name": "TOP_AGE_BUCKET",
+       "type": "string"
+      },
+      {
+       "name": "GENDER_M_RATIO_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "GENDER_F_RATIO_WAVG",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "MONTHLY_TREND",
+     "source": "gold/MONTHLY_TREND.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "MONTH",
+       "type": "string"
+      },
+      {
+       "name": "GG_VOLUME",
+       "type": "bigint"
+      },
+      {
+       "name": "NV_VOLUME",
+       "type": "double"
+      },
+      {
+       "name": "TOTAL_VOLUME",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "NEW_TREND_CANDIDATES",
+     "source": "gold/NEW_TREND_CANDIDATES.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CONCEPT",
+       "type": "string"
+      },
+      {
+       "name": "IN_PANEL",
+       "type": "boolean"
+      },
+      {
+       "name": "VOL_AVG",
+       "type": "double"
+      },
+      {
+       "name": "TREND",
+       "type": "double"
+      },
+      {
+       "name": "VERDICT",
+       "type": "string"
+      },
+      {
+       "name": "RECOVERS_GAP",
+       "type": "boolean"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "TREND_MONITOR",
+     "source": "gold/TREND_MONITOR.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_AVG",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "MOMENTUM_SCORE",
+       "type": "double"
+      },
+      {
+       "name": "INCLUSION_STATUS",
+       "type": "string"
+      },
+      {
+       "name": "BREAKOUT_FLAG",
+       "type": "bigint"
+      },
+      {
+       "name": "CHANGE_CLASS",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "TREND_RANKING",
+     "source": "gold/TREND_RANKING.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "RANK",
+       "type": "bigint"
+      },
+      {
+       "name": "CANONICAL_KEYWORD",
+       "type": "string"
+      },
+      {
+       "name": "SEGMENT",
+       "type": "string"
+      },
+      {
+       "name": "VOLUME_TOTAL",
+       "type": "bigint"
+      },
+      {
+       "name": "VOLUME_TREND",
+       "type": "double"
+      },
+      {
+       "name": "DOMINANT_INTENT",
+       "type": "string"
+      },
+      {
+       "name": "MOMENTUM_SCORE",
+       "type": "double"
+      },
+      {
+       "name": "DIRECTION",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "GOLD",
+     "name": "UNKNOWN_UNKNOWNS",
+     "source": "gold/UNKNOWN_UNKNOWNS.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CONCEPT",
+       "type": "string"
+      },
+      {
+       "name": "DIMENSION",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "COST",
+     "name": "API_CALL_LOG",
+     "source": "cost/API_CALL_LOG.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "CALL_SEQ",
+       "type": "bigint"
+      },
+      {
+       "name": "RUN_ID",
+       "type": "string"
+      },
+      {
+       "name": "GL",
+       "type": "string"
+      },
+      {
+       "name": "PHASE",
+       "type": "string"
+      },
+      {
+       "name": "API",
+       "type": "string"
+      },
+      {
+       "name": "PURPOSE",
+       "type": "string"
+      },
+      {
+       "name": "PARAMS",
+       "type": "string"
+      },
+      {
+       "name": "INPUT_COST",
+       "type": "bigint"
+      },
+      {
+       "name": "INPUT_COUNT",
+       "type": "bigint"
+      },
+      {
+       "name": "OUTPUT_COST",
+       "type": "bigint"
+      },
+      {
+       "name": "OUTPUT_COUNT",
+       "type": "bigint"
+      },
+      {
+       "name": "TOTAL_COST",
+       "type": "bigint"
+      },
+      {
+       "name": "RETURNED",
+       "type": "bigint"
+      },
+      {
+       "name": "REQUEST_AT",
+       "type": "string"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "COST",
+     "name": "COST_SUMMARY",
+     "source": "cost/COST_SUMMARY.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "DIMENSION",
+       "type": "string"
+      },
+      {
+       "name": "KEY",
+       "type": "string"
+      },
+      {
+       "name": "CALLS",
+       "type": "bigint"
+      },
+      {
+       "name": "CREDITS",
+       "type": "bigint"
+      },
+      {
+       "name": "PCT",
+       "type": "double"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "META",
+     "name": "RUN_MANIFEST",
+     "source": "meta/RUN_MANIFEST.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "RUN_ID",
+       "type": "string"
+      },
+      {
+       "name": "GL",
+       "type": "string"
+      },
+      {
+       "name": "RUN_DATE",
+       "type": "string"
+      },
+      {
+       "name": "REF_VERSION",
+       "type": "string"
+      },
+      {
+       "name": "TOTAL_API_CREDITS",
+       "type": "bigint"
+      },
+      {
+       "name": "LOADED_AT",
+       "type": "timestamp"
+      },
+      {
+       "name": "PAYLOAD",
+       "type": "json"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    },
+    {
+     "layer": "META",
+     "name": "SEED_DESIGN",
+     "source": "meta/SEED_DESIGN.csv",
+     "partition": [],
+     "columns": [
+      {
+       "name": "RUN_ID",
+       "type": "string"
+      },
+      {
+       "name": "SOURCE_FILE",
+       "type": "string"
+      },
+      {
+       "name": "LOADED_AT",
+       "type": "timestamp"
+      },
+      {
+       "name": "PAYLOAD",
+       "type": "json"
+      },
+      {
+       "name": "_run_id",
+       "type": "string",
+       "comment": "적재 run 식별자 — 재적재 시 이 값으로 지우고 싣는다"
+      },
+      {
+       "name": "_loaded_at",
+       "type": "timestamp",
+       "comment": "적재 시각(UTC)"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
